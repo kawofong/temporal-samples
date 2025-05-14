@@ -10,3 +10,9 @@ to install Python dependencies:
 ```bash
 uv sync
 ```
+
+Use `uv` to run a workflow runner:
+
+```bash
+uv run -m order_notification.runners.workflow
+```
