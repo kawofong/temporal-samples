@@ -94,10 +94,11 @@ async def main():
     # Start client
     client = await Client.connect("localhost:7233")
 
+    TASK_QUEUE = "pydantic-ai-hello-world-task-queue"
     # Run a worker for the workflow
     async with Worker(
         client,
-        task_queue="pydantic-ai-hello-world-task-queue",
+        task_queue=TASK_QUEUE,
         workflows=[PydanticAiHelloWorkflow],
         activities=[AgentActivities().run_agent],
         activity_executor=ThreadPoolExecutor(5),
@@ -106,7 +107,7 @@ async def main():
             PydanticAiHelloWorkflow.run,
             HelloWorkflowInput(question='Where does "hello world" come from?'),
             id="pydantic-ai-hello-world-workflow-id",
-            task_queue="pydantic-ai-hello-world-task-queue",
+            task_queue=TASK_QUEUE,
         )
         print(f"Result: {result}")
 
