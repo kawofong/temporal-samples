@@ -586,7 +586,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "logfire", specifier = ">=3.18.0" },
+    { name = "logfire", specifier = "==3.18.0" },
     { name = "pydantic", specifier = "==2.11.4" },
     { name = "pydantic-ai-slim", extras = ["openai"], specifier = "==0.2.16" },
     { name = "pytz", specifier = "==2025.2" },

@@ -15,11 +15,13 @@ from temporalio import activity, workflow
 from temporalio.client import Client
 from temporalio.worker import Worker
 
+from common.python.decorators import simulate_failure
+
 with workflow.unsafe.imports_passed_through():
     import logfire
     from pydantic import BaseModel, Field
-
     from pydantic_ai import Agent, RunContext
+    from pydantic_ai.agent import AgentRunResult
 
 logfire.configure()
 logfire.instrument_pydantic_ai()
@@ -132,10 +134,20 @@ class SupportAgentActivities:
         """
         Ask the agent a question.
         """
-        activity.logger.info("Running agent with question %s" % arg.query)
-        deps = SupportDependencies(customer_id=arg.customer_id, db=DatabaseConn())
-        result = self._support_agent.run_sync(arg.query, deps=deps)
+        activity.logger.info("Running agent with question %s", arg)
+        result = self.query_agent(customer_id=arg.customer_id, query=arg.query)
         return result.output
+
+    @simulate_failure(failure_count=3)
+    def query_agent(
+        self, customer_id: int, query: str
+    ) -> AgentRunResult[SupportOutput]:
+        """
+        Query the agent.
+        """
+        deps = SupportDependencies(customer_id=customer_id, db=DatabaseConn())
+        result = self._support_agent.run_sync(query, deps=deps)
+        return result
 
 
 # Setting `sandboxed=False` because logfire instrumentation uses `urllib.request.Request`
