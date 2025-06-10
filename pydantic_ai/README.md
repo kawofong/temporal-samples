@@ -10,7 +10,13 @@
 
 1. Obtain an OpenAI API key and set `OPENAI_API_KEY` in `.envrc`
 
-1. Use `uv` to run a workflow runner:
+1. Start Temporal development server in a terminal.
+
+    ```bash
+    temporal server start-dev
+    ```
+
+1. In a new terminal, use `uv` to run a workflow runner:
 
     ```bash
     uv run pydantic_ai/pydantic_ai_hello.py
