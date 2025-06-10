@@ -1,18 +1,17 @@
 # Temporal Samples
 
-This repo includes polyglot workflows for various use cases.
+This repo includes Temporal workflows for various use cases.
+
+## Pre-requisites
+
+- [uv](https://docs.astral.sh/uv/getting-started/installation/)
+- [direnv](https://direnv.net/docs/installation.html)
 
 ## Getting started
 
 With this repository cloned, run the following at the root of the directory
 to install Python dependencies:
 
-```bash
-uv sync
-```
-
-Use `uv` to run a workflow runner:
-
-```bash
-uv run -m order_notification.runners.workflow
-```
+    ```bash
+    uv sync
+    ```

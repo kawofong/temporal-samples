@@ -23,3 +23,11 @@ stateDiagram-v2
     OrderDeclined --> [*]
     OrderPickedUp --> [*]
 ```
+
+## Getting started
+
+From the root directory of the project, use `uv` to run a workflow runner:
+
+```bash
+uv run -m order_notification.runners.workflow
+```
