@@ -66,10 +66,7 @@ class AgentActivities:
         return result.output
 
 
-# Setting `sandboxed=False` because `Agent()` uses `urllib.request.Request`
-# Without this, we get the following error:
-# `Cannot access urllib.request.Request.__mro_entries__ from inside a workflow`
-@workflow.defn(sandboxed=False)
+@workflow.defn
 class PydanticAiHelloWorkflow:
     """
     Pydantic AI "Hello World" Workflow.
