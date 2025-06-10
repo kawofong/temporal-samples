@@ -1,7 +1,8 @@
 """
-Reference: https://ai.pydantic.dev/examples/bank-support/
+Reference: https://ai.pydantic.dev/#instrumentation-with-pydantic-logfire
 
-Shows tools and dependency injection from Pydantic AI.
+Prerequisites:
+- Logfire token is set in `.envrc`
 """
 
 import asyncio
@@ -15,9 +16,13 @@ from temporalio.client import Client
 from temporalio.worker import Worker
 
 with workflow.unsafe.imports_passed_through():
+    import logfire
     from pydantic import BaseModel, Field
 
     from pydantic_ai import Agent, RunContext
+
+logfire.configure()
+logfire.instrument_pydantic_ai()
 
 
 class DatabaseConn:
@@ -133,7 +138,10 @@ class SupportAgentActivities:
         return result.output
 
 
-@workflow.defn
+# Setting `sandboxed=False` because logfire instrumentation uses `urllib.request.Request`
+# Without this, we get the following error:
+# `Cannot access urllib.request.Request.__mro_entries__ from inside a workflow`
+@workflow.defn(sandboxed=False)
 class SupportAgentWorkflow:
     """
     Support agent workflow for a bank.

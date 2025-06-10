@@ -16,7 +16,7 @@
     temporal server start-dev
     ```
 
-1. In a new terminal, use `uv` to run a workflow runner:
+1. In a new terminal, use `uv` to run a workflow:
 
     ```bash
     uv run pydantic_ai/pydantic_ai_hello.py

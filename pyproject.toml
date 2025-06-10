@@ -5,6 +5,7 @@ description = "A mono-repo of Temporal workflows"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "logfire==3.18.0",
     "pydantic==2.11.4",
     "pydantic-ai-slim[openai]==0.2.16",
     "pytz==2025.2",

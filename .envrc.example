@@ -1,1 +1,4 @@
 export OPENAI_API_KEY='your-api-key'
+
+# Applicable when using Logfire (https://pydantic.dev/logfire)
+export LOGFIRE_TOKEN='your-logfire-token'
