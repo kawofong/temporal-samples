@@ -5,9 +5,18 @@ description = "A mono-repo of Temporal workflows"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "litellm==1.72.2",
     "logfire==3.18.0",
     "pydantic==2.11.4",
     "pydantic-ai-slim[openai]==0.2.16",
     "pytz==2025.2",
     "temporalio==1.11.1",
+]
+
+[dependency-groups]
+smolagents = [
+    "helium==5.1.1",
+    "pillow==11.2.1",
+    "selenium==4.33.0",
+    "smolagents==1.18.0",
 ]
