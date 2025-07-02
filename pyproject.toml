@@ -25,6 +25,8 @@ smolagents = [
 
 [tool.poe.tasks]
 structlog_hello = "-m python.structlog.structlog_hello"
+custom_metrics = "-m python.observability.custom_metrics"
+observability_worker = "-m python.observability.worker"
 
 [tool.poe.tasks.structlog_formatter]
 env = { STAGE = "DEVELOPMENT", LOG_LEVEL = "INFO" }
