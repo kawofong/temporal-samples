@@ -36,6 +36,7 @@ from datetime import timedelta
 from temporalio import activity, workflow
 from temporalio.client import Client
 from temporalio.common import RetryPolicy
+from temporalio.exceptions import ActivityError
 from temporalio.workflow import ParentClosePolicy
 
 TASK_QUEUE = "observability-task-queue"
@@ -137,7 +138,7 @@ class HelloWorkflow:
                     maximum_attempts=2,
                 ),
             )
-        except Exception as e:
+        except ActivityError as e:
             # Increment the failure counter
             self._failure_counter.add(
                 1,
