@@ -23,10 +23,14 @@ smolagents = [
     "smolagents==1.18.0",
 ]
 
+[tool.pylint.messages_control]
+disable = ["redefined-builtin"]
+
 [tool.poe.tasks]
 structlog_hello = "-m python.structlog.structlog_hello"
 custom_metrics = "-m python.observability.custom_metrics"
 observability_worker = "-m python.observability.worker"
+interceptor_simple = "-m python.interceptor.simple.interceptor_simple"
 
 [tool.poe.tasks.structlog_formatter]
 env = { STAGE = "DEVELOPMENT", LOG_LEVEL = "INFO" }
