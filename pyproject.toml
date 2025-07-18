@@ -32,6 +32,7 @@ custom_metrics = "-m python.observability.custom_metrics"
 observability_worker = "-m python.observability.worker"
 interceptor_simple = "-m python.interceptor.simple.interceptor_simple"
 interceptor_worker = "-m python.interceptor.worker.interceptor_worker"
+monitor_retry = "-m python.retry.monitor_retry"
 
 [tool.poe.tasks.structlog_formatter]
 env = { STAGE = "DEVELOPMENT", LOG_LEVEL = "INFO" }
