@@ -33,6 +33,10 @@ observability_worker = "-m python.observability.worker"
 interceptor_simple = "-m python.interceptor.simple.interceptor_simple"
 interceptor_worker = "-m python.interceptor.worker.interceptor_worker"
 monitor_retry = "-m python.retry.monitor_retry"
+versioning_basic_worker = "-m python.versioning.basic.worker"
+versioning_basic_workflow = "-m python.versioning.basic.workflow"
+versioning_basic_worker_v2 = "-m python.versioning.basic.worker_v2"
+versioning_basic_workflow_v2 = "-m python.versioning.basic.workflow_v2"
 
 [tool.poe.tasks.structlog_formatter]
 env = { STAGE = "DEVELOPMENT", LOG_LEVEL = "INFO" }
