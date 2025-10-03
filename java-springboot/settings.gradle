@@ -1,0 +1,4 @@
+rootProject.name = 'temporal-samples'
+include ':dataConverter:api'
+include ':dataConverter:domain'
+include ':dataConverter:workers'
