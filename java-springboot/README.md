@@ -1,60 +1,57 @@
-# Temporal Jumpstart App
+# Java Spring Boot samples
 
-This directory contains the main Temporal application components:
+This project contains the following Spring Boot samples:
 
-- **api**: Spring Boot REST API server (port 3030)
-- **workers**: Temporal workflow workers
-- **domain**: Shared domain models and workflows
+- **dataConverter**: custom encryption on Temporal payloads
 
 ## Prerequisites
 
 - Java 17+
-- Temporal Server (local dev server or Temporal Cloud)
+- Temporal CLI
 
-## Running the Applications
+## Running the Samples
 
-### Local Development (with Temporal dev server)
+### Data Converter
 
 1. **Start Temporal Server**
+
    ```bash
-   temporal server start-dev
+   temporal server start-dev --ui-codec-endpoint http://localhost:8090
    ```
 
-2. **Run the Workers** (from `${PROJECT_ROOT}/java-springboot`)
+1. **Run the Workers** (from `${PROJECT_ROOT}/java-springboot`)
+
    ```bash
-   ./gradlew :app:workers:bootRun
+   ./gradlew :dataConverter:workers:bootRun
    ```
 
-3. **Run the API Server** (from `${PROJECT_ROOT}/java-springboot`)
+1. **Run the API Server** (from `${PROJECT_ROOT}/java-springboot`)
+
    ```bash
-   ./gradlew :app:api:bootRun
+   ./gradlew :dataConverter:api:bootRun
    ```
 
 The API server will be available at `http://localhost:3030`
 
-### Temporal Cloud
+1. **Run the Codec Server** (from `${PROJECT_ROOT}/java-springboot`)
 
-1. **Run the Workers**
    ```bash
-   ./gradlew :app:workers:bootRun --args='--spring.profiles.active=temporal-cloud'
+   ./gradlew :dataConverter:codecServer:bootRun
    ```
 
-2. **Run the API Server**
+The codec server will be available at `http://localhost:8090`
+
+1. **Trigger a Temporal Workflow**
+
    ```bash
-   ./gradlew :app:api:bootRun --args='--spring.profiles.active=temporal-cloud'
+   curl -X POST http://localhost:3030/api/v1/users/workflow-id \
+     -H "Content-Type: application/json" \
+     -d '{
+       "id": "custom-id",
+       "value": "custom-value"
+     }'
    ```
 
-## Configuration
+1. **View Temporal UI**
 
-- **API**: Configuration in `api/src/main/resources/application.yaml`
-- **Workers**: Configuration in `workers/src/main/resources/application.yaml`
-
-The workers are configured to:
-- Connect to Temporal server at `127.0.0.1:7233` (local)
-- Use task queue: `apps`
-- Run workflow: `MyWorkflowImpl`
-- Execute activities from bean: `my-activities`
-
-## Monitoring
-
-Both applications expose Prometheus metrics at `/actuator/prometheus` endpoint.
+Check Temporal UI for the triggered Workflow.

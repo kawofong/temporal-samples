@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package io.temporal.app.api;
+package io.temporal.app.codecServer;
 
 import io.temporal.app.domain.DomainConfig;
 import org.springframework.boot.SpringApplication;

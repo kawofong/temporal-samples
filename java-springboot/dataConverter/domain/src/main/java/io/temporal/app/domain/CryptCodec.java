@@ -16,9 +16,8 @@ import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-import org.jetbrains.annotations.NotNull;
 
-class CryptCodec implements PayloadCodec {
+public class CryptCodec implements PayloadCodec {
   static final ByteString METADATA_ENCODING =
       ByteString.copyFrom("binary/encrypted", StandardCharsets.UTF_8);
 
@@ -34,15 +33,13 @@ class CryptCodec implements PayloadCodec {
   private static final int GCM_TAG_LENGTH_BIT = 128;
   private static final Charset UTF_8 = StandardCharsets.UTF_8;
 
-  @NotNull
   @Override
-  public List<Payload> encode(@NotNull List<Payload> payloads) {
+  public List<Payload> encode(List<Payload> payloads) {
     return payloads.stream().map(this::encodePayload).collect(Collectors.toList());
   }
 
-  @NotNull
   @Override
-  public List<Payload> decode(@NotNull List<Payload> payloads) {
+  public List<Payload> decode(List<Payload> payloads) {
     return payloads.stream().map(this::decodePayload).collect(Collectors.toList());
   }
 

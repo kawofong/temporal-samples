@@ -24,9 +24,34 @@
 
 package io.temporal.app.domain;
 
+import io.temporal.client.WorkflowClientOptions;
+import io.temporal.common.converter.CodecDataConverter;
+import io.temporal.common.converter.DefaultDataConverter;
+import io.temporal.spring.boot.TemporalOptionsCustomizer;
+import java.util.Collections;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 @ComponentScan
 @Configuration
-public class DomainConfig {}
+public class DomainConfig {
+  /**
+   * For the full list of customizer options, see
+   * https://docs.temporal.io/develop/java/spring-boot-integration#customize-options
+   */
+  @Bean
+  public TemporalOptionsCustomizer<WorkflowClientOptions.Builder> customClientOptions() {
+    return new TemporalOptionsCustomizer<WorkflowClientOptions.Builder>() {
+
+      @Override
+      public WorkflowClientOptions.Builder customize(WorkflowClientOptions.Builder optionsBuilder) {
+        return optionsBuilder.setDataConverter(
+            new CodecDataConverter(
+                DefaultDataConverter.newDefaultInstance(),
+                Collections.singletonList(new CryptCodec()),
+                true)); // Setting encodeFailureAttributes to true
+      }
+    };
+  }
+}

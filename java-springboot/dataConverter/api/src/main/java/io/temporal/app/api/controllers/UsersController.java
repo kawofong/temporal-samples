@@ -30,7 +30,6 @@ import io.temporal.app.domain.messages.workflows.StartMyWorkflowRequest;
 import io.temporal.app.domain.workflows.MyWorkflow;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowExecutionAlreadyStarted;
-import io.temporal.client.WorkflowNotFoundException;
 import io.temporal.client.WorkflowOptions;
 import java.net.URI;
 import org.slf4j.Logger;
