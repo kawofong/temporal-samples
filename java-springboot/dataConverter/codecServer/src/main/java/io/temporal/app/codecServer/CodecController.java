@@ -25,8 +25,14 @@
 package io.temporal.app.codecServer;
 
 import io.temporal.api.common.v1.Payload;
+import io.temporal.app.codecServer.dto.DecodeRequest;
+import io.temporal.app.codecServer.dto.DecodeResponse;
+import io.temporal.app.codecServer.dto.EncodeRequest;
+import io.temporal.app.codecServer.dto.EncodeResponse;
+import io.temporal.app.codecServer.dto.HealthResponse;
 import io.temporal.app.domain.CryptCodec;
 import io.temporal.payload.codec.PayloadCodecException;
+import jakarta.validation.Valid;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,7 +70,7 @@ public class CodecController {
       value = "/encode",
       consumes = MediaType.APPLICATION_JSON_VALUE,
       produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<EncodeResponse> encode(@RequestBody EncodeRequest request) {
+  public ResponseEntity<EncodeResponse> encode(@Valid @RequestBody EncodeRequest request) {
     try {
       logger.debug("Encoding {} payloads", request.getPayloads().size());
 
@@ -96,7 +102,7 @@ public class CodecController {
       value = "/decode",
       consumes = MediaType.APPLICATION_JSON_VALUE,
       produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<DecodeResponse> decode(@RequestBody DecodeRequest request) {
+  public ResponseEntity<DecodeResponse> decode(@Valid @RequestBody DecodeRequest request) {
     try {
       logger.debug("Decoding {} payloads", request.getPayloads().size());
 
@@ -126,133 +132,5 @@ public class CodecController {
   @GetMapping(value = "/health", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<HealthResponse> health() {
     return ResponseEntity.ok(new HealthResponse("OK", "Codec server is running"));
-  }
-
-  // Request/Response DTOs
-
-  public static class EncodeRequest {
-    private List<Payload> payloads;
-
-    public EncodeRequest() {}
-
-    public EncodeRequest(List<Payload> payloads) {
-      this.payloads = payloads;
-    }
-
-    public List<Payload> getPayloads() {
-      return payloads;
-    }
-
-    public void setPayloads(List<Payload> payloads) {
-      this.payloads = payloads;
-    }
-  }
-
-  public static class EncodeResponse {
-    private List<Payload> payloads;
-    private String error;
-
-    public EncodeResponse() {}
-
-    public EncodeResponse(List<Payload> payloads) {
-      this.payloads = payloads;
-    }
-
-    public EncodeResponse(String error) {
-      this.error = error;
-    }
-
-    public List<Payload> getPayloads() {
-      return payloads;
-    }
-
-    public void setPayloads(List<Payload> payloads) {
-      this.payloads = payloads;
-    }
-
-    public String getError() {
-      return error;
-    }
-
-    public void setError(String error) {
-      this.error = error;
-    }
-  }
-
-  public static class DecodeRequest {
-    private List<Payload> payloads;
-
-    public DecodeRequest() {}
-
-    public DecodeRequest(List<Payload> payloads) {
-      this.payloads = payloads;
-    }
-
-    public List<Payload> getPayloads() {
-      return payloads;
-    }
-
-    public void setPayloads(List<Payload> payloads) {
-      this.payloads = payloads;
-    }
-  }
-
-  public static class DecodeResponse {
-    private List<Payload> payloads;
-    private String error;
-
-    public DecodeResponse() {}
-
-    public DecodeResponse(List<Payload> payloads) {
-      this.payloads = payloads;
-    }
-
-    public DecodeResponse(String error) {
-      this.error = error;
-    }
-
-    public List<Payload> getPayloads() {
-      return payloads;
-    }
-
-    public void setPayloads(List<Payload> payloads) {
-      this.payloads = payloads;
-    }
-
-    public String getError() {
-      return error;
-    }
-
-    public void setError(String error) {
-      this.error = error;
-    }
-  }
-
-  public static class HealthResponse {
-    private String status;
-    private String message;
-
-    public HealthResponse() {}
-
-    public HealthResponse(String status, String message) {
-      this.status = status;
-      this.message = message;
-    }
-
-    public String getStatus() {
-      return status;
-    }
-
-    public void setStatus(String status) {
-      this.status = status;
-    }
-
-    public String getMessage() {
-      return message;
-    }
-
-    public void setMessage(String message) {
-      this.message = message;
-    }
   }
 }

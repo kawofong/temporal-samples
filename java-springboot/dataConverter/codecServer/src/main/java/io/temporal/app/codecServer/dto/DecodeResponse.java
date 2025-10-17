@@ -22,12 +22,40 @@
  * SOFTWARE.
  */
 
-package io.temporal.app.api.messages;
+package io.temporal.app.codecServer.dto;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import io.temporal.api.common.v1.Payload;
+import java.util.List;
 
-public record UserPost(
-    @NotNull(message = "ID cannot be null") @NotBlank(message = "ID cannot be blank") String id,
-    @NotNull(message = "Value cannot be null") @NotBlank(message = "Value cannot be blank")
-        String value) {}
+/** Response DTO for decoding payloads. */
+public class DecodeResponse {
+
+  private List<Payload> payloads;
+  private String error;
+
+  public DecodeResponse() {}
+
+  public DecodeResponse(List<Payload> payloads) {
+    this.payloads = payloads;
+  }
+
+  public DecodeResponse(String error) {
+    this.error = error;
+  }
+
+  public List<Payload> getPayloads() {
+    return payloads;
+  }
+
+  public void setPayloads(List<Payload> payloads) {
+    this.payloads = payloads;
+  }
+
+  public String getError() {
+    return error;
+  }
+
+  public void setError(String error) {
+    this.error = error;
+  }
+}

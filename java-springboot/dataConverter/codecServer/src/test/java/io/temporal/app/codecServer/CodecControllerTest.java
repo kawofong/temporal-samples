@@ -148,4 +148,22 @@ class CodecControllerTest {
         .perform(post("/decode").contentType(MediaType.APPLICATION_JSON).content(invalidJson))
         .andExpect(status().isBadRequest());
   }
+
+  @Test
+  void testEncodeWithNullPayloads() throws Exception {
+    String nullPayloadsJson = "{\"payloads\":null}";
+
+    mockMvc
+        .perform(post("/encode").contentType(MediaType.APPLICATION_JSON).content(nullPayloadsJson))
+        .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  void testDecodeWithEmptyPayloads() throws Exception {
+    String emptyPayloadsJson = "{\"payloads\":[]}";
+
+    mockMvc
+        .perform(post("/decode").contentType(MediaType.APPLICATION_JSON).content(emptyPayloadsJson))
+        .andExpect(status().isBadRequest());
+  }
 }

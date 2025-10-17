@@ -22,12 +22,34 @@
  * SOFTWARE.
  */
 
-package io.temporal.app.api.messages;
+package io.temporal.app.codecServer.dto;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+/** Response DTO for health check endpoint. */
+public class HealthResponse {
 
-public record UserPost(
-    @NotNull(message = "ID cannot be null") @NotBlank(message = "ID cannot be blank") String id,
-    @NotNull(message = "Value cannot be null") @NotBlank(message = "Value cannot be blank")
-        String value) {}
+  private String status;
+  private String message;
+
+  public HealthResponse() {}
+
+  public HealthResponse(String status, String message) {
+    this.status = status;
+    this.message = message;
+  }
+
+  public String getStatus() {
+    return status;
+  }
+
+  public void setStatus(String status) {
+    this.status = status;
+  }
+
+  public String getMessage() {
+    return message;
+  }
+
+  public void setMessage(String message) {
+    this.message = message;
+  }
+}

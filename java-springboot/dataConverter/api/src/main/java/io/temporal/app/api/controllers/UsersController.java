@@ -31,6 +31,7 @@ import io.temporal.app.domain.workflows.MyWorkflow;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowExecutionAlreadyStarted;
 import io.temporal.client.WorkflowOptions;
+import jakarta.validation.Valid;
 import java.net.URI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,7 +57,7 @@ public class UsersController {
       value = "/{id}",
       consumes = {MediaType.APPLICATION_JSON_VALUE},
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  ResponseEntity<String> usersPost(@PathVariable String id, @RequestBody UserPost params) {
+  ResponseEntity<String> usersPost(@PathVariable String id, @Valid @RequestBody UserPost params) {
     // if using Temporal...
     return startWorkflow(id, params);
   }
