@@ -37,11 +37,22 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class DomainConfig {
   /**
+   * Creates a CryptCodec bean for encryption/decryption operations.
+   *
+   * @return CryptCodec instance
+   */
+  @Bean
+  public CryptCodec cryptCodec() {
+    return new CryptCodec();
+  }
+
+  /**
    * For the full list of customizer options, see
    * https://docs.temporal.io/develop/java/spring-boot-integration#customize-options
    */
   @Bean
-  public TemporalOptionsCustomizer<WorkflowClientOptions.Builder> customClientOptions() {
+  public TemporalOptionsCustomizer<WorkflowClientOptions.Builder> customClientOptions(
+      CryptCodec cryptCodec) {
     return new TemporalOptionsCustomizer<WorkflowClientOptions.Builder>() {
 
       @Override
@@ -49,7 +60,7 @@ public class DomainConfig {
         return optionsBuilder.setDataConverter(
             new CodecDataConverter(
                 DefaultDataConverter.newDefaultInstance(),
-                Collections.singletonList(new CryptCodec()),
+                Collections.singletonList(cryptCodec),
                 true)); // Setting encodeFailureAttributes to true
       }
     };

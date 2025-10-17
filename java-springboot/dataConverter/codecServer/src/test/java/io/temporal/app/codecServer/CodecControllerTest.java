@@ -24,25 +24,41 @@
 
 package io.temporal.app.codecServer;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.google.protobuf.ByteString;
 import io.temporal.api.common.v1.Payload;
+import io.temporal.app.domain.CryptCodec;
 import io.temporal.common.converter.EncodingKeys;
+import io.temporal.payload.codec.PayloadCodecException;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 /** Unit tests for the CodecController REST endpoints. */
-@WebMvcTest(CodecController.class)
+@WebMvcTest({CodecController.class, CodecServerConfig.class})
 class CodecControllerTest {
 
   @Autowired private MockMvc mockMvc;
+
+  @MockBean private CryptCodec cryptCodec;
+
+  @BeforeEach
+  void setUp() {
+    reset(cryptCodec);
+  }
 
   @Test
   void testHealthEndpoint() throws Exception {
@@ -65,6 +81,9 @@ class CodecControllerTest {
             .setData(ByteString.copyFrom("{\"test\":\"data\"}", StandardCharsets.UTF_8))
             .build();
 
+    // Mock the encode method to return a list with the test payload
+    when(cryptCodec.encode(any(List.class))).thenReturn(Collections.singletonList(testPayload));
+
     String requestJson =
         String.format(
             "{\"payloads\":[{\"metadata\":{\"%s\":\"%s\"},\"data\":\"%s\"}]}",
@@ -81,6 +100,18 @@ class CodecControllerTest {
 
   @Test
   void testDecodeEndpoint() throws Exception {
+    // Create a simple payload for testing
+    Payload testPayload =
+        Payload.newBuilder()
+            .putMetadata(
+                EncodingKeys.METADATA_ENCODING_KEY,
+                ByteString.copyFrom("json/plain", StandardCharsets.UTF_8))
+            .setData(ByteString.copyFrom("{\"test\":\"data\"}", StandardCharsets.UTF_8))
+            .build();
+
+    // Mock the decode method to return a list with the test payload
+    when(cryptCodec.decode(any(List.class))).thenReturn(Collections.singletonList(testPayload));
+
     // Create an encrypted payload for testing decode
     String requestJson =
         "{\"payloads\":[{\"metadata\":{\"encoding\":\"binary/encrypted\"},\"data\":\"dGVzdA==\"}]}";
@@ -94,6 +125,10 @@ class CodecControllerTest {
 
   @Test
   void testEncodeWithInvalidPayload() throws Exception {
+    // Mock the encode method to throw an exception for invalid payloads
+    when(cryptCodec.encode(any(List.class)))
+        .thenThrow(new PayloadCodecException("Invalid payload"));
+
     String invalidJson = "{\"payloads\":[{\"invalid\":\"structure\"}]}";
 
     mockMvc
@@ -103,6 +138,10 @@ class CodecControllerTest {
 
   @Test
   void testDecodeWithInvalidPayload() throws Exception {
+    // Mock the decode method to throw an exception for invalid payloads
+    when(cryptCodec.decode(any(List.class)))
+        .thenThrow(new PayloadCodecException("Invalid payload"));
+
     String invalidJson = "{\"payloads\":[{\"invalid\":\"structure\"}]}";
 
     mockMvc

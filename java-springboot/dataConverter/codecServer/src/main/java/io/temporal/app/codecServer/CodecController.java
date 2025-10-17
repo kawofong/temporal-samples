@@ -50,8 +50,8 @@ public class CodecController {
   private static final Logger logger = LoggerFactory.getLogger(CodecController.class);
   private final CryptCodec cryptCodec;
 
-  public CodecController() {
-    this.cryptCodec = new CryptCodec();
+  public CodecController(CryptCodec cryptCodec) {
+    this.cryptCodec = cryptCodec;
   }
 
   /**
