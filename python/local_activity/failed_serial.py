@@ -63,6 +63,8 @@ class HelloWorkflow:
             success,
             start_to_close_timeout=timedelta(seconds=1),
         )
+        # TODO: try uncommenting the line below to trigger a WFT failure
+        # raise RuntimeError("Workflow task exception is raised.")
         await workflow.execute_local_activity(
             fail,
             start_to_close_timeout=timedelta(seconds=1),
@@ -103,7 +105,7 @@ async def main():
         await client.execute_workflow(
             HelloWorkflow.run,
             id=f"hello-workflow-{uuid.uuid4()}",
-            task_queue="random-tq",
+            task_queue=TASK_QUEUE,
         )
 
 
