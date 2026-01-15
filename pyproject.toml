@@ -41,6 +41,8 @@ versioning_basic_worker_v2 = "-m python.versioning.basic.worker_v2"
 versioning_auto_worker = "-m python.versioning.auto.worker"
 versioning_auto_workflow = "-m python.versioning.auto.workflow"
 versioning_auto_worker_v2 = "-m python.versioning.auto.worker_v2"
+expirable_workflow_worker = "-m python.expirable_workflow.worker"
+expirable_workflow_starter = "-m python.expirable_workflow.starter"
 
 [tool.poe.tasks.structlog_formatter]
 env = { STAGE = "DEVELOPMENT", LOG_LEVEL = "INFO" }
