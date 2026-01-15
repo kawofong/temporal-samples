@@ -18,3 +18,9 @@ For example, you would use the following command to run the [`HelloActivity`](./
     ```bash
     ./run_workflow.sh io.temporal.samples.hello.HelloActivity
     ```
+
+Or you can use `gradlew`. To run the [`ExpirableWorkflowWorker`](./core/src/main/java/io/temporal/samples/expirableWorkflow/ExpirablePaymentWorker.java), run:
+
+    ```bash
+    ./gradlew :core:execute -PmainClass=io.temporal.samples.expirableWorkflow.ExpirablePaymentWorker
+    ```
