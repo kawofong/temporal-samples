@@ -2,3 +2,9 @@ export OPENAI_API_KEY='your-api-key'
 
 # Applicable when using Logfire (https://pydantic.dev/logfire)
 export LOGFIRE_TOKEN='your-logfire-token'
+
+# Temporal connection settings (defaults to local dev server when unset)
+# Set all three to target Temporal Cloud instead of the local dev server.
+export TEMPORAL_ADDRESS='<namespace>.<accountId>.tmprl.cloud:7233'
+export TEMPORAL_NAMESPACE='<namespace>.<accountId>'
+export TEMPORAL_API_KEY='your-temporal-api-key'
