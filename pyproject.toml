@@ -47,6 +47,7 @@ schedule_worker = "-m python.schedule.worker"
 parallel_activities = "-m python.schedule.parallel_activities"
 resumable_activities = "-m python.schedule.resumable_activities"
 create_schedule = "-m python.schedule.schedule"
+etl_child_workflow = "-m python.etl.child_workflow"
 
 [tool.poe.tasks.structlog_formatter]
 env = { STAGE = "DEVELOPMENT", LOG_LEVEL = "INFO" }
