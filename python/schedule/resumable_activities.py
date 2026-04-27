@@ -1,6 +1,9 @@
 """
-Execute 3 ShipOrderActivities in parallel,
-pauses Workflow when any activity fails 5 times consecutively.
+Execute 3 ShipOrderActivities in parallel.
+Pauses the Workflow when any activity fails 5 times consecutively and waits
+for a per-order `continue` signal before retrying.
+
+Requires the schedule worker to be running (`uv run poe schedule_worker`).
 
 Supports running against the local Temporal dev server or Temporal Cloud, controlled
 entirely through environment variables:
@@ -9,24 +12,41 @@ entirely through environment variables:
     TEMPORAL_NAMESPACE  Namespace (default: default)
     TEMPORAL_API_KEY    API key - when set, enables TLS and targets Temporal Cloud
 
+To run against the local dev server:
+
 1. Start Temporal development server in a terminal.
 
     ```bash
     temporal server start-dev
     ```
 
-2. In a new terminal, run the workflow:
+2. In a new terminal, start the worker:
+
+    ```bash
+    uv run poe schedule_worker
+    ```
+
+3. In another terminal, start the workflow (prints the workflow ID):
 
     ```bash
     uv run poe resumable_activities
     ```
 
-3. To unblock a paused workflow, send the `continue` signal:
+4. To unblock a paused order, send the `continue` signal with the order ID:
 
     ```bash
-    temporal workflow signal \
-        --workflow-id <workflow-id> \
-        --name continue
+    temporal workflow signal \\
+        --workflow-id <workflow-id> \\
+        --name continue_signal \\
+        --input '"<order-id>"'
+    ```
+
+To run against Temporal Cloud, export the environment variables first:
+
+    ```bash
+    export TEMPORAL_ADDRESS="<namespace>.<accountId>.tmprl.cloud:7233"
+    export TEMPORAL_NAMESPACE="<namespace>.<accountId>"
+    export TEMPORAL_API_KEY="<your-api-key>"
     ```
 """
 
@@ -35,25 +55,14 @@ import logging
 import os
 import random
 import uuid
-from concurrent.futures import ThreadPoolExecutor
-from dataclasses import dataclass, field
 from datetime import timedelta
 
 from temporalio import activity, workflow
 from temporalio.client import Client
 from temporalio.common import RetryPolicy
 from temporalio.exceptions import ActivityError, ApplicationError
-from temporalio.worker import Worker
 
-TASK_QUEUE = "ship-order-task-queue"
-
-
-@dataclass
-class ShipOrderInput:
-    order_id: str
-    customer_name: str
-    destination: str
-    fail_probs: float = field(default=0.0)
+from python.schedule.parallel_activities import TASK_QUEUE, ShipOrderInput
 
 
 class DownStreamError(ApplicationError):
@@ -63,11 +72,12 @@ class DownStreamError(ApplicationError):
 
 
 @activity.defn
-def ship_order(input: ShipOrderInput) -> str:
+def resumable_ship_order(input: ShipOrderInput) -> str:
     """
-    Mock ShipOrderActivity - simulates shipping an order.
+    Mock ShipOrderActivity for the resumable workflow.
 
-    Raises RuntimeError with probability `fail_probs` (0.0 = never, 1.0 = always).
+    Raises DownStreamError (non-retryable) after 5 attempts, signalling that
+    human intervention is required. Also fails randomly based on `fail_probs`.
     """
     retry_count = activity.info().attempt
     activity.logger.info(
@@ -89,7 +99,7 @@ def ship_order(input: ShipOrderInput) -> str:
 
 
 @workflow.defn
-class ShipOrderWorkflow:
+class ResumableShipOrderWorkflow:
     """
     Workflow that ships 3 orders in parallel.
 
@@ -150,7 +160,7 @@ class ShipOrderWorkflow:
         while result is None:
             try:
                 result = await workflow.execute_activity(
-                    ship_order,
+                    resumable_ship_order,
                     order,
                     start_to_close_timeout=timedelta(seconds=30),
                     retry_policy=RetryPolicy(
@@ -210,21 +220,21 @@ async def main():
 
     client = await connect_client()
 
-    async with Worker(
-        client,
+    workflow_id = f"resumable-ship-order-workflow-{uuid.uuid4()}"
+    handle = await client.start_workflow(
+        ResumableShipOrderWorkflow.run,
+        id=workflow_id,
         task_queue=TASK_QUEUE,
-        workflows=[ShipOrderWorkflow],
-        activities=[ship_order],
-        activity_executor=ThreadPoolExecutor(5),
-    ):
-        results = await client.execute_workflow(
-            ShipOrderWorkflow.run,
-            id=f"ship-order-workflow-{uuid.uuid4()}",
-            task_queue=TASK_QUEUE,
-        )
+    )
 
-    for result in results:
-        print(result)
+    print(f"Started workflow: {handle.id}")
+    print(
+        f"To resume a paused order, run:\n"
+        f"  temporal workflow signal \\\n"
+        f"      --workflow-id {handle.id} \\\n"
+        f"      --name continue_signal \\\n"
+        f'      --input \'"<order-id>"\''
+    )
 
 
 if __name__ == "__main__":

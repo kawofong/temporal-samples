@@ -1,6 +1,8 @@
 """
 Execute 3 ShipOrderActivities in parallel, each with a different order ID.
 
+Requires the schedule worker to be running (`uv run poe schedule_worker`).
+
 Supports running against the local Temporal dev server or Temporal Cloud, controlled
 entirely through environment variables:
 
@@ -16,26 +18,24 @@ To run against the local dev server:
     temporal server start-dev
     ```
 
-2. In a new terminal, run the workflow:
+2. In a new terminal, start the worker:
+
+    ```bash
+    uv run poe schedule_worker
+    ```
+
+3. In another terminal, start the workflow:
 
     ```bash
     uv run poe parallel_activities
     ```
 
-To run against Temporal Cloud:
-
-1. Export the required environment variables:
+To run against Temporal Cloud, export the environment variables first:
 
     ```bash
     export TEMPORAL_ADDRESS="<namespace>.<accountId>.tmprl.cloud:7233"
     export TEMPORAL_NAMESPACE="<namespace>.<accountId>"
     export TEMPORAL_API_KEY="<your-api-key>"
-    ```
-
-2. Run the workflow:
-
-    ```bash
-    uv run poe parallel_activities
     ```
 """
 
@@ -44,13 +44,11 @@ import logging
 import os
 import random
 import uuid
-from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
 from datetime import timedelta
 
 from temporalio import activity, workflow
 from temporalio.client import Client
-from temporalio.worker import Worker
 
 TASK_QUEUE = "ship-order-task-queue"
 
@@ -162,18 +160,11 @@ async def main():
 
     client = await connect_client()
 
-    async with Worker(
-        client,
+    results = await client.execute_workflow(
+        ShipOrderWorkflow.run,
+        id=f"ship-order-workflow-{uuid.uuid4()}",
         task_queue=TASK_QUEUE,
-        workflows=[ShipOrderWorkflow],
-        activities=[ship_order],
-        activity_executor=ThreadPoolExecutor(5),
-    ):
-        results = await client.execute_workflow(
-            ShipOrderWorkflow.run,
-            id=f"ship-order-workflow-{uuid.uuid4()}",
-            task_queue=TASK_QUEUE,
-        )
+    )
 
     for result in results:
         print(result)

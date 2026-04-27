@@ -43,8 +43,10 @@ versioning_auto_workflow = "-m python.versioning.auto.workflow"
 versioning_auto_worker_v2 = "-m python.versioning.auto.worker_v2"
 expirable_workflow_worker = "-m python.expirable_workflow.worker"
 expirable_workflow_starter = "-m python.expirable_workflow.starter"
+schedule_worker = "-m python.schedule.worker"
 parallel_activities = "-m python.schedule.parallel_activities"
 resumable_activities = "-m python.schedule.resumable_activities"
+create_schedule = "-m python.schedule.schedule"
 
 [tool.poe.tasks.structlog_formatter]
 env = { STAGE = "DEVELOPMENT", LOG_LEVEL = "INFO" }
